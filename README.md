@@ -40,3 +40,9 @@ npm run dev
 The app will instantly inform you if your vehicle can circulate or is restricted.
 
 **Note:** The system validates input formats and will display error messages if the license plate or date formats are incorrect.
+
+## Technologies Used
+
+-   React + TypeScript
+-   Vite
+-   Tailwind CSS
