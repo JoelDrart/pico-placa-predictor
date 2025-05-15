@@ -29,3 +29,14 @@ npm run dev
 ```
 
 5. Open your browser and visit `http://localhost:5173`
+
+## Usage
+
+1. Enter your vehicle's license plate number (e.g., ABC-1234)
+2. Enter a date (Format: DD/MM/YYYY)
+3. Choose a time
+4. Click "Check Restrictions"
+
+The app will instantly inform you if your vehicle can circulate or is restricted.
+
+**Note:** The system validates input formats and will display error messages if the license plate or date formats are incorrect.
