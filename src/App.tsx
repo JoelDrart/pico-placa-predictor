@@ -1,12 +1,15 @@
 import { useState } from "react";
 import Result from "./components/ui/Result";
+import { checkDateFormat, validateDate } from "./utils/checkInput";
+import { PicoPlacaPredictor } from "./utils/PicoPlacaPredictor";
 
 function App() {
-    const results = ["Your car is not restricted.", "Your car IS restricted."];
-
     const [result, setResult] = useState("Waiting...");
+    const [isRestricted, setIsRestricted] = useState(false);
+    const [showResult, setShowResult] = useState(false);
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
+    const [licensePlate, setLicensePlate] = useState("");
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDate(event.target.value);
@@ -14,11 +17,28 @@ function App() {
     const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTime(event.target.value);
     };
+    const handleLicensePlateChange = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setLicensePlate(event.target.value);
+    };
 
     const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         console.log("Date:", date);
         console.log("Time:", time);
+        console.log("License Plate:", licensePlate);
+
+        const dateTime = PicoPlacaPredictor.convertStringToDate(date, time);
+        const isRestricted = PicoPlacaPredictor.isRestricted(
+            dateTime,
+            licensePlate
+        );
+
+        setIsRestricted(isRestricted);
+        const resultValue = PicoPlacaPredictor.getResult(isRestricted);
+        setResult(resultValue);
+        setShowResult(true);
     };
     return (
         <div className="min-h-screen flex flex-col">
@@ -33,13 +53,29 @@ function App() {
                         Predict your Pico Placa restrictions
                     </h2>
                     <p className="text-center text-gray-600">
-                        Enter the date and time to check if your car is
-                        restricted.
+                        Enter the license plate number, date and time to check
+                        if your car is restricted.
                     </p>
                 </div>
                 <form className="space-y-6 max-w-md mx-auto">
                     <div className="space-y-4">
                         <div className="flex flex-col">
+                            <label
+                                htmlFor="plate"
+                                className="text-lg font-medium text-gray-700 mb-2"
+                            >
+                                License Plate Number:
+                            </label>
+                            <input
+                                type="text"
+                                id="plate"
+                                name="plate"
+                                value={licensePlate}
+                                onChange={handleLicensePlateChange}
+                                required
+                                placeholder="ABC-1234"
+                                className="border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                            />
                             <label
                                 htmlFor="date"
                                 className="text-lg font-medium text-gray-700 mb-2"
@@ -54,6 +90,7 @@ function App() {
                                 value={date}
                                 onChange={handleDateChange}
                                 className="border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                                required
                             />
                         </div>
                         <div className="flex flex-col">
@@ -70,6 +107,7 @@ function App() {
                                 value={time}
                                 onChange={handleTimeChange}
                                 className="border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition"
+                                required
                             />
                         </div>
                     </div>
@@ -82,11 +120,11 @@ function App() {
                     </button>
                 </form>
 
-                {/* <img
-                    src="https://www.amt.gob.ec/wp-content/uploads/2023/05/pico_y_placa_nuevo_horario.png"
-                    alt=""
-                    className="w-100 h-auto mt-8 rounded-lg "
-                /> */}
+                <div className="mt-8">
+                    {showResult && (
+                        <Result result={result} isRestricted={isRestricted} />
+                    )}
+                </div>
             </main>
             <footer>
                 <div className="bg-sky-600 text-white p-4">
