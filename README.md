@@ -7,7 +7,7 @@ This app helps to predict if a car can circulate in Quito city based on the "Pic
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/pico-placa-predictor.git
+git clone https://github.com/JoelDrart/pico-placa-predictor.git
 ```
 
 2. Navigate to project directory:
