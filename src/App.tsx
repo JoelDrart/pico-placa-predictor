@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Result from "./components/ui/Result";
-import { checkDateFormat, validateDate } from "./utils/checkInput";
+import {
+    checkDateFormat,
+    checkLicensePlateFormat,
+    validateDate,
+} from "./utils/checkInput";
 import { PicoPlacaPredictor } from "./utils/PicoPlacaPredictor";
 
 function App() {
@@ -10,6 +14,7 @@ function App() {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [licensePlate, setLicensePlate] = useState("");
+    const [condition, setCondition] = useState("");
 
     const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDate(event.target.value);
@@ -29,7 +34,30 @@ function App() {
         console.log("Time:", time);
         console.log("License Plate:", licensePlate);
 
+        if (!checkLicensePlateFormat(licensePlate)) {
+            setLicensePlate("Invalid license plate format. Use AAA-1234");
+            return;
+        }
+        if (!checkDateFormat(date)) {
+            setDate("Invalid date format. Use DD/MM/YYYY");
+            return;
+        }
+
+        if (!validateDate(date)) {
+            setDate("Invalid date. Please check the date.");
+            return;
+        }
+
         const dateTime = PicoPlacaPredictor.convertStringToDate(date, time);
+
+        setCondition(
+            `Day: ${dateTime.toLocaleDateString("en-US", {
+                weekday: "long",
+            })}\nTime: ${dateTime.toLocaleTimeString()}\nLast Digit: ${licensePlate.slice(
+                -1
+            )}`
+        );
+
         const isRestricted = PicoPlacaPredictor.isRestricted(
             dateTime,
             licensePlate
@@ -49,12 +77,12 @@ function App() {
             </header>
             <main className="flex-grow mx-auto w-full max-w-2xl p-8 bg-slate-100 rounded-lg shadow-md m-4">
                 <div className="mb-8">
-                    <h2 className="text-3xl font-semibold text-center text-gray-800 mb-4">
+                    {/* <h2 className="text-3xl font-semibold text-center text-gray-800 mb-4">
                         Predict your Pico Placa restrictions
-                    </h2>
+                    </h2> */}
                     <p className="text-center text-gray-600">
                         Enter the license plate number, date and time to check
-                        if your car is restricted.
+                        if your car will be restricted.
                     </p>
                 </div>
                 <form className="space-y-6 max-w-md mx-auto">
@@ -122,7 +150,13 @@ function App() {
 
                 <div className="mt-8">
                     {showResult && (
-                        <Result result={result} isRestricted={isRestricted} />
+                        <>
+                            <p>{condition}</p>
+                            <Result
+                                result={result}
+                                isRestricted={isRestricted}
+                            />
+                        </>
                     )}
                 </div>
             </main>
@@ -132,6 +166,15 @@ function App() {
                         Pico Placa Predictor. Erick Malán. Stack Builders
                         Challenge
                     </p>
+                    <a
+                        href=" https://www.amt.gob.ec/index.php/informacion/pico-y-placa/"
+                        target="_blank"
+                    >
+                        <p className="text-center underline">
+                            Check the official documentation about Pico y Placa
+                            regulations in Quito
+                        </p>
+                    </a>
                 </div>
             </footer>
         </div>
